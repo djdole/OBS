@@ -1,7 +1,15 @@
 @echo off
-
 if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
-  SET mypath=%~dp0
+  set mypath=%~dp0
+  set lock=%mypath%lock
+  if exist "%lock%" (
+    exit
+  ) else (
+    echo . > "%lock%"
+	echo If this window is MANUALLY terminated, be sure to also manually DELETE the lock file at:
+	echo "%lock%"
+  )
+
   rem The ideal way to do this would be to actually use the system time
   setlocal EnableDelayedExpansion
   if ["%~1"] == [""] (
@@ -33,4 +41,5 @@ if not DEFINED IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && 
   echo|set /p="%prepend%%MinStr%%SecStr%%append%" > "%out_file%"
   set /a CountdownSec -= 1
   if %CountdownSec% GTR -1 goto loop
+  del /F /Q "%lock%"
 exit
